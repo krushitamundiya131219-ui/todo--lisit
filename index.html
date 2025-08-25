@@ -7,13 +7,54 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f4f4f9;
       margin: 0;
       padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(-45deg, #f4f4f9, #a1c4fd, #c2e9fb, #f4f4f9);
+      background-size: 400% 400%;
+      animation: gradientBG 12s ease infinite;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .background-cartoons {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .cartoon-sun {
+      position: absolute;
+      left: 10vw;
+      top: 10vh;
+      width: 120px;
+      animation: sunMove 8s linear infinite alternate;
+    }
+    @keyframes sunMove {
+      0% { top: 10vh; }
+      100% { top: 20vh; }
+    }
+
+    .cartoon-cloud {
+      position: absolute;
+      left: 60vw;
+      top: 30vh;
+      width: 160px;
+      animation: cloudMove 12s linear infinite alternate;
+    }
+    @keyframes cloudMove {
+      0% { left: 60vw; }
+      100% { left: 70vw; }
     }
 
     .container {
@@ -22,13 +63,11 @@
       border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
       width: 350px;
+      z-index: 1;
+      position: relative;
     }
-
-    h2 {
-      text-align: center;
-      color: #333;
-    }
-
+    /* ...rest of your styles... */
+    h2 { text-align: center; color: #333; }
     input {
       width: 75%;
       padding: 10px;
@@ -36,7 +75,6 @@
       border-radius: 8px;
       outline: none;
     }
-
     button {
       padding: 10px 15px;
       margin-left: 5px;
@@ -46,17 +84,8 @@
       border-radius: 8px;
       cursor: pointer;
     }
-
-    button:hover {
-      background: #218838;
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-      margin-top: 20px;
-    }
-
+    button:hover { background: #218838; }
+    ul { list-style: none; padding: 0; margin-top: 20px; }
     li {
       background: #f1f1f1;
       padding: 10px;
@@ -66,12 +95,7 @@
       justify-content: space-between;
       align-items: center;
     }
-
-    li.completed {
-      text-decoration: line-through;
-      color: gray;
-    }
-
+    li.completed { text-decoration: line-through; color: gray; }
     .delete-btn {
       background: red;
       color: white;
@@ -80,13 +104,43 @@
       border-radius: 6px;
       cursor: pointer;
     }
-
-    .delete-btn:hover {
-      background: darkred;
-    }
+    .delete-btn:hover { background: darkred; }
   </style>
 </head>
 <body>
+  <div class="background-cartoons">
+    <!-- Cartoon Sun SVG -->
+    <svg class="cartoon-sun" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="16" fill="#FFD93B"/>
+      <g>
+        <line x1="32" y1="4" x2="32" y2="16" stroke="#FFD93B" stroke-width="4"/>
+        <line x1="32" y1="48" x2="32" y2="60" stroke="#FFD93B" stroke-width="4"/>
+        <line x1="4" y1="32" x2="16" y2="32" stroke="#FFD93B" stroke-width="4"/>
+        <line x1="48" y1="32" x2="60" y2="32" stroke="#FFD93B" stroke-width="4"/>
+        <line x1="12" y1="12" x2="20" y2="20" stroke="#FFD93B" stroke-width="4"/>
+        <line x1="44" y1="44" x2="52" y2="52" stroke="#FFD93B" stroke-width="4"/>
+        <line x1="12" y1="52" x2="20" y2="44" stroke="#FFD93B" stroke-width="4"/>
+        <line x1="44" y1="20" x2="52" y2="12" stroke="#FFD93B" stroke-width="4"/>
+      </g>
+      <circle cx="40" cy="28" r="2" fill="#333"/>
+      <circle cx="24" cy="28" r="2" fill="#333"/>
+      <path d="M26 38 Q32 44 38 38" stroke="#333" stroke-width="2" fill="none"/>
+    </svg>
+    <!-- Cartoon Cloud SVG -->
+    <svg class="cartoon-cloud" viewBox="0 0 120 60">
+      <ellipse cx="40" cy="40" rx="35" ry="20" fill="#fff"/>
+      <ellipse cx="80" cy="35" rx="25" ry="15" fill="#fff"/>
+      <ellipse cx="60" cy="50" rx="30" ry="18" fill="#e0e7ef"/>
+      <!-- Animated "wave" hand -->
+      <ellipse id="cloud-hand" cx="100" cy="30" rx="7" ry="4" fill="#fff">
+        <animate attributeName="cy" values="30;25;30" dur="2s" repeatCount="indefinite"/>
+      </ellipse>
+      <!-- Cloud face -->
+      <circle cx="55" cy="45" r="2" fill="#333"/>
+      <circle cx="70" cy="45" r="2" fill="#333"/>
+      <path d="M60 52 Q62 55 65 52" stroke="#333" stroke-width="2" fill="none"/>
+    </svg>
+  </div>
   <div class="container">
     <h2>📝 To-Do List</h2>
     <div>
@@ -95,7 +149,6 @@
     </div>
     <ul id="taskList"></ul>
   </div>
-
   <script>
     const taskInput = document.getElementById("taskInput");
     const taskList = document.getElementById("taskList");
@@ -110,10 +163,8 @@
     function addTask() {
       const taskText = taskInput.value.trim();
       if (taskText === "") return alert("Please enter a task!");
-      
       addTaskToDOM(taskText, false);
       saveTasks();
-
       taskInput.value = "";
     }
 
@@ -121,24 +172,21 @@
     function addTaskToDOM(text, completed) {
       const li = document.createElement("li");
       li.textContent = text;
-
       if (completed) li.classList.add("completed");
-
       // Mark complete on click
       li.addEventListener("click", () => {
         li.classList.toggle("completed");
         saveTasks();
       });
-
       // Delete button
       const delBtn = document.createElement("button");
       delBtn.textContent = "Delete";
       delBtn.className = "delete-btn";
-      delBtn.onclick = () => {
+      delBtn.onclick = (e) => {
+        e.stopPropagation();
         li.remove();
         saveTasks();
       };
-
       li.appendChild(delBtn);
       taskList.appendChild(li);
     }
